@@ -1,17 +1,23 @@
 {
   "name": "news-announcement-system",
   "version": "1.0.0",
-  "description": "最新消息公告系统",
+  "description": "最新消息公告系統 - 支援富文本編輯、圖片上傳、文件管理的黑白極簡風格公告系統",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
+  "engines": {
+    "node": ">=18.x",
+    "npm": ">=9.x"
+  },
   "keywords": [
     "news",
     "announcement",
     "express",
-    "mongodb"
+    "mongodb",
+    "firebase",
+    "heroku"
   ],
   "author": "",
   "license": "MIT",

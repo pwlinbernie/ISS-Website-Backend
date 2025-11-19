@@ -2,14 +2,23 @@ const admin = require('firebase-admin');
 const path = require('path');
 
 // 初始化 Firebase Admin SDK
-const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH ||
-  path.join(__dirname, '..', 'firebase-service-account.json');
-
 let firebaseInitialized = false;
 let bucket = null;
 
 try {
-  const serviceAccount = require(serviceAccountPath);
+  let serviceAccount;
+
+  // 優先從環境變數讀取 (用於 Heroku 部署)
+  if (process.env.FIREBASE_CONFIG) {
+    console.log('📦 從環境變數載入 Firebase 配置');
+    serviceAccount = JSON.parse(process.env.FIREBASE_CONFIG);
+  } else {
+    // 本地開發從文件讀取
+    console.log('📁 從文件載入 Firebase 配置');
+    const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH ||
+      path.join(__dirname, '..', 'firebase-service-account.json');
+    serviceAccount = require(serviceAccountPath);
+  }
 
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -22,6 +31,9 @@ try {
 } catch (error) {
   console.error('❌ Firebase initialization failed:', error.message);
   console.log('💡 Please configure Firebase service account to enable file uploads');
+  if (process.env.NODE_ENV === 'production') {
+    console.log('💡 For Heroku: Set FIREBASE_CONFIG environment variable');
+  }
 }
 
 /**
