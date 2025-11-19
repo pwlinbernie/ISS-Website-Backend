@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>後台管理 - 公告系統</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+    <!-- Quill Editor CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: #ffffff;
+            padding: 0;
+            color: #000000;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: #000000;
+            color: white;
+            padding: 40px;
+            border-radius: 0;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            border: 3px solid #000000;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            font-weight: 300;
+            opacity: 0.8;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: 2px solid #000000;
+            border-radius: 0;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #000000;
+            border-color: white;
+        }
+
+        .btn-primary:hover {
+            background: transparent;
+            color: white;
+        }
+
+        .btn-success {
+            background: #000000;
+            color: white;
+            border-color: #000000;
+        }
+
+        .btn-success:hover {
+            background: white;
+            color: #000000;
+        }
+
+        .btn-danger {
+            background: white;
+            color: #000000;
+            border-color: white;
+        }
+
+        .btn-danger:hover {
+            background: #000000;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #666666;
+            color: white;
+            border-color: #666666;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #666666;
+        }
+
+        .btn-warning {
+            background: white;
+            color: #000000;
+            border-color: white;
+        }
+
+        .btn-warning:hover {
+            background: #000000;
+            color: white;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 0;
+            padding: 40px;
+            border: 3px solid #000000;
+        }
+
+        .card h2 {
+            margin-bottom: 25px;
+            color: #000000;
+            font-size: 1.6em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #000000;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #000000;
+            border-radius: 0;
+            font-size: 1em;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            background: #f9f9f9;
+        }
+
+        .form-group input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        #editor {
+            height: 300px;
+            background: white;
+            border: 2px solid #000000;
+        }
+
+        .file-upload-area {
+            border: 3px dashed #000000;
+            border-radius: 0;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #ffffff;
+        }
+
+        .file-upload-area:hover {
+            background: #f5f5f5;
+        }
+
+        .file-upload-area input {
+            display: none;
+        }
+
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .preview-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 0;
+            overflow: hidden;
+            border: 2px solid #000000;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-item .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #000000;
+            color: white;
+            border: 2px solid #000000;
+            border-radius: 0;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            font-weight: 700;
+        }
+
+        .link-list, .file-list {
+            margin-top: 15px;
+        }
+
+        .link-item, .file-list-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 0;
+            align-items: center;
+            border: 2px solid #e0e0e0;
+        }
+
+        .link-item input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #000000;
+            border-radius: 0;
+            background: white;
+        }
+
+        .news-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            border: 2px solid #000000;
+        }
+
+        .news-table th,
+        .news-table td {
+            padding: 18px 15px;
+            text-align: left;
+            border-bottom: 2px solid #000000;
+        }
+
+        .news-table th {
+            background: #000000;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        .news-table tr:hover {
+            background: #f5f5f5;
+        }
+
+        .tag-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 0;
+            font-size: 0.85em;
+            font-weight: 700;
+            border: 2px solid #000000;
+            letter-spacing: 0.5px;
+        }
+
+        .tag-賀 {
+            background: #000000;
+            color: white;
+        }
+
+        .tag-簡章公告 {
+            background: #333333;
+            color: white;
+        }
+
+        .tag-放榜 {
+            background: #666666;
+            color: white;
+        }
+
+        .pin-badge {
+            background: #000000;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 0;
+            font-size: 0.8em;
+            margin-left: 8px;
+            border: 2px solid #000000;
+            font-weight: 700;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons button {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 0;
+            border-radius: 0;
+            max-width: 1000px;
+            border: 3px solid #000000;
+        }
+
+        .modal-header {
+            background: #000000;
+            color: white;
+            padding: 25px 35px;
+            border-radius: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: white;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .close {
+            color: white;
+            font-size: 40px;
+            font-weight: 300;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 35px;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #666666;
+            font-size: 1.1em;
+        }
+
+        .error-message {
+            background: #f5f5f5;
+            color: #000000;
+            padding: 20px;
+            border-radius: 0;
+            margin-bottom: 20px;
+            border: 2px solid #000000;
+            font-weight: 600;
+        }
+
+        .success-message {
+            background: #f5f5f5;
+            color: #000000;
+            padding: 20px;
+            border-radius: 0;
+            margin-bottom: 20px;
+            border: 2px solid #000000;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .news-table {
+                font-size: 0.9em;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>公告管理後台</h1>
+                <p>創建、編輯和管理最新消息公告</p>
+            </div>
+            <div class="header-buttons">
+                <button class="btn btn-primary" onclick="showCreateModal()">新增公告</button>
+                <a href="/" class="btn btn-primary">返回首頁</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="card">
+                <h2>公告列表</h2>
+                <div id="newsListContainer">
+                    <div class="loading">載入中...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 創建/編輯公告模態框 -->
+    <div id="newsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">新增公告</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="newsForm">
+                    <input type="hidden" id="newsId">
+
+                    <div class="form-group">
+                        <label for="tag">標籤 *</label>
+                        <select id="tag" required>
+                            <option value="">請選擇標籤</option>
+                            <option value="賀">賀</option>
+                            <option value="簡章公告">簡章公告</option>
+                            <option value="放榜">放榜</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="title">標題 *</label>
+                        <input type="text" id="title" required placeholder="請輸入公告標題">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="publishDate">發佈日期 *</label>
+                        <input type="date" id="publishDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="content">內容 *</label>
+                        <div id="editor"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>圖片上傳</label>
+                        <div class="file-upload-area" onclick="document.getElementById('imageInput').click()">
+                            <p>點擊或拖曳上傳圖片</p>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 8px;">支援 JPG、PNG、GIF 格式</p>
+                            <input type="file" id="imageInput" accept="image/*" multiple onchange="handleImageUpload(event)">
+                        </div>
+                        <div id="imagePreview" class="preview-container"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>文件上傳</label>
+                        <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                            <p>點擊或拖曳上傳文件</p>
+                            <p style="font-size: 0.9em; color: #666; margin-top: 8px;">支援 PDF、DOC、XLS、ZIP 等格式</p>
+                            <input type="file" id="fileInput" multiple onchange="handleFileUpload(event)">
+                        </div>
+                        <div id="fileList" class="file-list"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>相關連結</label>
+                        <div id="linkList" class="link-list"></div>
+                        <button type="button" class="btn btn-secondary" onclick="addLinkField()">添加連結</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="isPinned">
+                            <span>置頂此公告</span>
+                        </label>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 30px;">
+                        <button type="submit" class="btn btn-success">儲存</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let quill;
+        let currentNewsId = null;
+        let uploadedImages = [];
+        let uploadedFiles = [];
+        let quillLoaded = false;
+
+        // 初始化應用
+        function initApp() {
+            console.log('initApp 被調用, quillLoaded:', quillLoaded);
+            if (quillLoaded) {
+                console.log('開始初始化編輯器...');
+                initQuillEditor();
+                loadNewsList();
+                setupFormSubmit();
+                setDefaultDate();
+            } else {
+                console.warn('Quill 尚未載入');
+            }
+        }
+
+        // Quill 載入完成的回調
+        function onQuillLoaded() {
+            console.log('Quill 腳本已載入');
+            console.log('Quill 是否定義:', typeof Quill !== 'undefined');
+            quillLoaded = true;
+            if (document.readyState === 'loading') {
+                console.log('等待 DOM 載入完成...');
+                document.addEventListener('DOMContentLoaded', initApp);
+            } else {
+                console.log('DOM 已準備好，立即初始化');
+                initApp();
+            }
+        }
+    </script>
+
+    <!-- Quill Editor JS - 使用 onload 確保載入完成 -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js" onload="onQuillLoaded()"></script>
+
+    <script>
+
+        // 初始化 Quill 編輯器
+        function initQuillEditor() {
+            try {
+                const editorElement = document.getElementById('editor');
+                if (!editorElement) {
+                    console.error('找不到編輯器元素');
+                    return;
+                }
+
+                if (typeof Quill === 'undefined') {
+                    console.error('Quill 未定義');
+                    return;
+                }
+
+                quill = new Quill('#editor', {
+                    theme: 'snow',
+                    modules: {
+                        toolbar: [
+                            [{ 'header': [1, 2, 3, false] }],
+                            [{ 'font': [] }],
+                            [{ 'size': ['small', false, 'large', 'huge'] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'color': [] }, { 'background': [] }],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            [{ 'align': [] }],
+                            ['link', 'image'],
+                            ['clean']
+                        ]
+                    },
+                    placeholder: '請輸入公告內容...'
+                });
+
+                console.log('Quill 編輯器初始化成功');
+            } catch (error) {
+                console.error('初始化 Quill 編輯器失敗:', error);
+                alert('編輯器初始化失敗，請重新整理頁面');
+            }
+        }
+
+        // 設置默認日期為今天
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('publishDate').value = today;
+        }
+
+        // 載入公告列表
+        async function loadNewsList() {
+            const container = document.getElementById('newsListContainer');
+            container.innerHTML = '<div class="loading">載入中...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/news?limit=100`);
+                const result = await response.json();
+
+                if (result.success) {
+                    displayNewsList(result.data.news);
+                } else {
+                    container.innerHTML = `<div class="error-message">載入失敗: ${result.message}</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="error-message">載入失敗: ${error.message}</div>`;
+            }
+        }
+
+        // 顯示公告列表
+        function displayNewsList(news) {
+            const container = document.getElementById('newsListContainer');
+
+            if (news.length === 0) {
+                container.innerHTML = '<div class="loading">暫無公告</div>';
+                return;
+            }
+
+            const html = `
+                <table class="news-table">
+                    <thead>
+                        <tr>
+                            <th>標題</th>
+                            <th>標籤</th>
+                            <th>發佈日期</th>
+                            <th>瀏覽次數</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${news.map(item => `
+                            <tr>
+                                <td>
+                                    ${escapeHtml(item.title)}
+                                    ${item.isPinned ? '<span class="pin-badge">置頂</span>' : ''}
+                                </td>
+                                <td><span class="tag-badge tag-${item.tag}">${escapeHtml(item.tag)}</span></td>
+                                <td>${formatDate(item.publishDate)}</td>
+                                <td>${item.viewCount || 0}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-warning" onclick="togglePin('${item._id}', ${item.isPinned})">
+                                            ${item.isPinned ? '取消置頂' : '置頂'}
+                                        </button>
+                                        <button class="btn btn-primary" onclick="editNews('${item._id}')">編輯</button>
+                                        <button class="btn btn-danger" onclick="deleteNews('${item._id}')">刪除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // 顯示創建模態框
+        function showCreateModal() {
+            if (!quill) {
+                alert('編輯器尚未載入完成，請稍後再試');
+                return;
+            }
+
+            currentNewsId = null;
+            document.getElementById('modalTitle').textContent = '新增公告';
+            document.getElementById('newsForm').reset();
+            document.getElementById('newsId').value = '';
+
+            try {
+                quill.setContents([]);
+            } catch (error) {
+                console.error('清空編輯器內容失敗:', error);
+            }
+
+            uploadedImages = [];
+            uploadedFiles = [];
+            document.getElementById('imagePreview').innerHTML = '';
+            document.getElementById('fileList').innerHTML = '';
+            document.getElementById('linkList').innerHTML = '';
+            setDefaultDate();
+            document.getElementById('newsModal').style.display = 'block';
+        }
+
+        // 編輯公告
+        async function editNews(id) {
+            if (!quill) {
+                alert('編輯器尚未載入完成，請稍後再試');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/news/${id}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    currentNewsId = id;
+                    const news = result.data;
+
+                    document.getElementById('modalTitle').textContent = '編輯公告';
+                    document.getElementById('newsId').value = id;
+                    document.getElementById('tag').value = news.tag;
+                    document.getElementById('title').value = news.title;
+                    document.getElementById('publishDate').value = news.publishDate.split('T')[0];
+                    document.getElementById('isPinned').checked = news.isPinned;
+
+                    // 設置 Quill 內容
+                    try {
+                        quill.root.innerHTML = news.content;
+                    } catch (error) {
+                        console.error('設置編輯器內容失敗:', error);
+                    }
+
+                    // 設置圖片
+                    uploadedImages = news.images || [];
+                    displayImagePreviews();
+
+                    // 設置文件
+                    uploadedFiles = news.files || [];
+                    displayFilePreviews();
+
+                    // 設置連結
+                    document.getElementById('linkList').innerHTML = '';
+                    if (news.links && news.links.length > 0) {
+                        news.links.forEach(link => {
+                            addLinkField(link.title, link.url);
+                        });
+                    }
+
+                    document.getElementById('newsModal').style.display = 'block';
+                } else {
+                    alert('載入公告失敗: ' + result.message);
+                }
+            } catch (error) {
+                alert('載入公告失敗: ' + error.message);
+            }
+        }
+
+        // 關閉模態框
+        function closeModal() {
+            document.getElementById('newsModal').style.display = 'none';
+        }
+
+        // 處理圖片上傳
+        async function handleImageUpload(event) {
+            const files = event.target.files;
+            if (files.length === 0) return;
+
+            for (let file of files) {
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    const response = await fetch(`${API_BASE}/upload/single`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        uploadedImages.push({
+                            url: result.data.url,
+                            filename: result.data.filename
+                        });
+                        displayImagePreviews();
+                    } else {
+                        alert('圖片上傳失敗: ' + result.message);
+                    }
+                } catch (error) {
+                    alert('圖片上傳失敗: ' + error.message);
+                }
+            }
+
+            event.target.value = '';
+        }
+
+        // 顯示圖片預覽
+        function displayImagePreviews() {
+            const container = document.getElementById('imagePreview');
+            container.innerHTML = uploadedImages.map((img, index) => `
+                <div class="preview-item">
+                    <img src="${img.url}" alt="預覽">
+                    <button class="remove-btn" onclick="removeImage(${index})" type="button">&times;</button>
+                </div>
+            `).join('');
+        }
+
+        // 刪除圖片
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            displayImagePreviews();
+        }
+
+        // 處理文件上傳
+        async function handleFileUpload(event) {
+            const files = event.target.files;
+            if (files.length === 0) return;
+
+            for (let file of files) {
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    const response = await fetch(`${API_BASE}/upload/single`, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        uploadedFiles.push({
+                            url: result.data.url,
+                            filename: result.data.filename,
+                            originalName: result.data.originalName,
+                            size: result.data.size,
+                            mimeType: result.data.mimeType
+                        });
+                        displayFilePreviews();
+                    } else {
+                        alert('文件上傳失敗: ' + result.message);
+                    }
+                } catch (error) {
+                    alert('文件上傳失敗: ' + error.message);
+                }
+            }
+
+            event.target.value = '';
+        }
+
+        // 顯示文件預覽
+        function displayFilePreviews() {
+            const container = document.getElementById('fileList');
+            container.innerHTML = uploadedFiles.map((file, index) => `
+                <div class="file-list-item">
+                    <span>${escapeHtml(file.originalName)} (${formatFileSize(file.size)})</span>
+                    <button class="btn btn-danger" onclick="removeFile(${index})" type="button">刪除</button>
+                </div>
+            `).join('');
+        }
+
+        // 刪除文件
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            displayFilePreviews();
+        }
+
+        // 添加連結欄位
+        function addLinkField(title = '', url = '') {
+            const linkList = document.getElementById('linkList');
+            const index = linkList.children.length;
+            const div = document.createElement('div');
+            div.className = 'link-item';
+            div.innerHTML = `
+                <input type="text" placeholder="連結標題" value="${escapeHtml(title)}" data-link-title="${index}">
+                <input type="text" placeholder="連結網址 (https://...)" value="${escapeHtml(url)}" data-link-url="${index}">
+                <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">刪除</button>
+            `;
+            linkList.appendChild(div);
+        }
+
+        // 設置表單提交
+        function setupFormSubmit() {
+            document.getElementById('newsForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const tag = document.getElementById('tag').value;
+                const title = document.getElementById('title').value;
+                const publishDate = document.getElementById('publishDate').value;
+                const content = quill.root.innerHTML;
+                const isPinned = document.getElementById('isPinned').checked;
+
+                // 收集連結
+                const links = [];
+                document.querySelectorAll('[data-link-title]').forEach((input, index) => {
+                    const urlInput = document.querySelector(`[data-link-url="${index}"]`);
+                    if (input.value && urlInput.value) {
+                        links.push({
+                            title: input.value,
+                            url: urlInput.value
+                        });
+                    }
+                });
+
+                const newsData = {
+                    tag,
+                    title,
+                    publishDate,
+                    content,
+                    images: uploadedImages,
+                    files: uploadedFiles,
+                    links,
+                    isPinned
+                };
+
+                try {
+                    let response;
+                    if (currentNewsId) {
+                        // 更新
+                        response = await fetch(`${API_BASE}/news/${currentNewsId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(newsData)
+                        });
+                    } else {
+                        // 創建
+                        response = await fetch(`${API_BASE}/news`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(newsData)
+                        });
+                    }
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        alert(result.message);
+                        closeModal();
+                        loadNewsList();
+                    } else {
+                        alert('操作失敗: ' + result.message);
+                    }
+                } catch (error) {
+                    alert('操作失敗: ' + error.message);
+                }
+            });
+        }
+
+        // 切換置頂
+        async function togglePin(id, currentPinned) {
+            try {
+                const response = await fetch(`${API_BASE}/news/${id}/toggle-pin`, {
+                    method: 'PATCH'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    loadNewsList();
+                } else {
+                    alert('操作失敗: ' + result.message);
+                }
+            } catch (error) {
+                alert('操作失敗: ' + error.message);
+            }
+        }
+
+        // 刪除公告
+        async function deleteNews(id) {
+            if (!confirm('確定要刪除這條公告嗎？此操作無法撤銷！')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/news/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    loadNewsList();
+                } else {
+                    alert('刪除失敗: ' + result.message);
+                }
+            } catch (error) {
+                alert('刪除失敗: ' + error.message);
+            }
+        }
+
+        // HTML 轉義
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 格式化日期
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('zh-TW', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+        }
+
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        // 點擊模態框外部關閉
+        window.onclick = function(event) {
+            const modal = document.getElementById('newsModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
