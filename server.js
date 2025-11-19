@@ -29,6 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // API 路由
 app.use('/api/news', require('./routes/newsRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
+app.use('/api/tags', require('./routes/tagRoutes'));
 
 // 前端路由
 app.get('/', (req, res) => {
@@ -41,6 +42,10 @@ app.get('/admin', (req, res) => {
 
 app.get('/embed', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'embed.html'));
+});
+
+app.get('/detail', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'detail.html'));
 });
 
 // 404 处理

@@ -7,7 +7,7 @@ exports.getAllNews = async (req, res) => {
     const { tag, page = 1, limit = 10 } = req.query;
 
     const filters = {};
-    if (tag && ['賀', '簡章公告', '放榜'].includes(tag)) {
+    if (tag) {
       filters.tag = tag;
     }
 

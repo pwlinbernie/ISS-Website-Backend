@@ -1,11 +1,10 @@
 const mongoose = require('mongoose');
 
 const newsSchema = new mongoose.Schema({
-  // 標籤：賀、簡章公告、放榜
+  // 標籤（動態標籤，不再使用 enum 限制）
   tag: {
     type: String,
     required: true,
-    enum: ['賀', '簡章公告', '放榜'],
     index: true
   },
 

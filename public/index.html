@@ -373,11 +373,8 @@
             <p>即時掌握最新公告資訊</p>
         </div>
 
-        <div class="filter-bar">
+        <div class="filter-bar" id="filterBar">
             <button class="tag-btn active" data-tag="">全部</button>
-            <button class="tag-btn" data-tag="賀">賀</button>
-            <button class="tag-btn" data-tag="簡章公告">簡章公告</button>
-            <button class="tag-btn" data-tag="放榜">放榜</button>
         </div>
 
         <div class="news-list" id="newsList">
@@ -403,9 +400,37 @@
 
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
+            loadTags();
             loadNews();
-            setupFilterButtons();
         });
+
+        // 載入標籤
+        async function loadTags() {
+            try {
+                const response = await fetch(`${API_BASE}/tags/active`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const filterBar = document.getElementById('filterBar');
+                    const allButton = filterBar.querySelector('.tag-btn');
+
+                    // 添加動態標籤按鈕
+                    result.data.forEach(tag => {
+                        const btn = document.createElement('button');
+                        btn.className = 'tag-btn';
+                        btn.dataset.tag = tag.name;
+                        btn.textContent = tag.name;
+                        filterBar.appendChild(btn);
+                    });
+
+                    setupFilterButtons();
+                }
+            } catch (error) {
+                console.error('載入標籤失敗:', error);
+                // 失敗時使用默認標籤
+                setupFilterButtons();
+            }
+        }
 
         // 设置筛选按钮
         function setupFilterButtons() {
@@ -545,8 +570,7 @@
 
         // 查看公告詳情
         function viewNews(id) {
-            // 可以跳轉到詳情頁或展開
-            console.log('View news:', id);
+            window.location.href = `/detail?id=${id}`;
         }
 
         // 顯示圖片

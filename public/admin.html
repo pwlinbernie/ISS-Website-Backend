@@ -43,6 +43,39 @@
             border: 3px solid #000000;
         }
 
+        .nav-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+            border: 3px solid #000000;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 20px;
+            background: white;
+            border: none;
+            border-right: 3px solid #000000;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+
+        .nav-tab:last-child {
+            border-right: none;
+        }
+
+        .nav-tab:hover {
+            background: #f5f5f5;
+        }
+
+        .nav-tab.active {
+            background: #000000;
+            color: white;
+        }
+
         .header h1 {
             font-size: 2em;
             font-weight: 700;
@@ -434,6 +467,34 @@
             font-weight: 600;
         }
 
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 0;
+            font-size: 0.85em;
+            font-weight: 700;
+            border: 2px solid #000000;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active {
+            background: #000000;
+            color: white;
+        }
+
+        .status-inactive {
+            background: white;
+            color: #000000;
+        }
+
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -455,19 +516,42 @@
         <div class="header">
             <div>
                 <h1>公告管理後台</h1>
-                <p>創建、編輯和管理最新消息公告</p>
+                <p>創建、編輯和管理最新消息公告與標籤</p>
             </div>
             <div class="header-buttons">
-                <button class="btn btn-primary" onclick="showCreateModal()">新增公告</button>
                 <a href="/" class="btn btn-primary">返回首頁</a>
             </div>
         </div>
 
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('news')">公告管理</button>
+            <button class="nav-tab" onclick="switchTab('tags')">標籤管理</button>
+        </div>
+
         <div class="content">
-            <div class="card">
-                <h2>公告列表</h2>
-                <div id="newsListContainer">
-                    <div class="loading">載入中...</div>
+            <!-- 公告管理區域 -->
+            <div id="newsTab" class="tab-content active">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <h2 style="margin-bottom: 0;">公告列表</h2>
+                        <button class="btn btn-success" onclick="showCreateModal()">新增公告</button>
+                    </div>
+                    <div id="newsListContainer">
+                        <div class="loading">載入中...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 標籤管理區域 -->
+            <div id="tagsTab" class="tab-content">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <h2 style="margin-bottom: 0;">標籤列表</h2>
+                        <button class="btn btn-success" onclick="showCreateTagModal()">新增標籤</button>
+                    </div>
+                    <div id="tagsListContainer">
+                        <div class="loading">載入中...</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -488,9 +572,6 @@
                         <label for="tag">標籤 *</label>
                         <select id="tag" required>
                             <option value="">請選擇標籤</option>
-                            <option value="賀">賀</option>
-                            <option value="簡章公告">簡章公告</option>
-                            <option value="放榜">放榜</option>
                         </select>
                     </div>
 
@@ -551,10 +632,48 @@
         </div>
     </div>
 
+    <!-- 創建/編輯標籤模態框 -->
+    <div id="tagModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="tagModalTitle">新增標籤</h2>
+                <span class="close" onclick="closeTagModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="tagForm">
+                    <input type="hidden" id="tagId">
+
+                    <div class="form-group">
+                        <label for="tagName">標籤名稱 *</label>
+                        <input type="text" id="tagName" required placeholder="請輸入標籤名稱">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tagSort">排序 *</label>
+                        <input type="text" id="tagSort" required placeholder="數字越小越前面，例如：1, 2, 3" value="99">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="tagIsActive" checked>
+                            <span>啟用此標籤</span>
+                        </label>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 30px;">
+                        <button type="submit" class="btn btn-success">儲存</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeTagModal()">取消</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE = '/api';
         let quill;
         let currentNewsId = null;
+        let currentTagId = null;
         let uploadedImages = [];
         let uploadedFiles = [];
         let quillLoaded = false;
@@ -566,10 +685,34 @@
                 console.log('開始初始化編輯器...');
                 initQuillEditor();
                 loadNewsList();
+                loadTagsList();
+                loadTagsForSelect();
                 setupFormSubmit();
+                setupTagFormSubmit();
                 setDefaultDate();
             } else {
                 console.warn('Quill 尚未載入');
+            }
+        }
+
+        // 切換標籤頁
+        function switchTab(tabName) {
+            // 更新導航按鈕狀態
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // 更新內容區域顯示
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            if (tabName === 'news') {
+                document.getElementById('newsTab').classList.add('active');
+            } else if (tabName === 'tags') {
+                document.getElementById('tagsTab').classList.add('active');
+                loadTagsList();
             }
         }
 
@@ -729,6 +872,7 @@
             document.getElementById('fileList').innerHTML = '';
             document.getElementById('linkList').innerHTML = '';
             setDefaultDate();
+            loadTagsForSelect(); // 重新載入標籤選項
             document.getElementById('newsModal').style.display = 'block';
         }
 
@@ -1052,9 +1196,217 @@
 
         // 點擊模態框外部關閉
         window.onclick = function(event) {
-            const modal = document.getElementById('newsModal');
-            if (event.target === modal) {
+            const newsModal = document.getElementById('newsModal');
+            const tagModal = document.getElementById('tagModal');
+            if (event.target === newsModal) {
                 closeModal();
+            } else if (event.target === tagModal) {
+                closeTagModal();
+            }
+        }
+
+        // ==================== 標籤管理功能 ====================
+
+        // 載入標籤列表
+        async function loadTagsList() {
+            const container = document.getElementById('tagsListContainer');
+            container.innerHTML = '<div class="loading">載入中...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/tags`);
+                const result = await response.json();
+
+                if (result.success) {
+                    displayTagsList(result.data);
+                } else {
+                    container.innerHTML = `<div class="error-message">載入失敗: ${result.message}</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="error-message">載入失敗: ${error.message}</div>`;
+            }
+        }
+
+        // 顯示標籤列表
+        function displayTagsList(tags) {
+            const container = document.getElementById('tagsListContainer');
+
+            if (tags.length === 0) {
+                container.innerHTML = '<div class="loading">暫無標籤</div>';
+                return;
+            }
+
+            const html = `
+                <table class="news-table">
+                    <thead>
+                        <tr>
+                            <th>標籤名稱</th>
+                            <th>排序</th>
+                            <th>狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tags.map(tag => `
+                            <tr>
+                                <td><span class="tag-badge tag-${tag.name}">${escapeHtml(tag.name)}</span></td>
+                                <td>${tag.sort}</td>
+                                <td><span class="status-badge ${tag.isActive ? 'status-active' : 'status-inactive'}">${tag.isActive ? '啟用' : '停用'}</span></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="btn btn-primary" onclick="editTag('${tag._id}')">編輯</button>
+                                        <button class="btn btn-danger" onclick="deleteTag('${tag._id}')">刪除</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // 載入標籤到下拉選單
+        async function loadTagsForSelect() {
+            try {
+                const response = await fetch(`${API_BASE}/tags/active`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const select = document.getElementById('tag');
+                    // 保留第一個選項（請選擇標籤）
+                    select.innerHTML = '<option value="">請選擇標籤</option>';
+
+                    result.data.forEach(tag => {
+                        const option = document.createElement('option');
+                        option.value = tag.name;
+                        option.textContent = tag.name;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('載入標籤選項失敗:', error);
+            }
+        }
+
+        // 顯示創建標籤模態框
+        function showCreateTagModal() {
+            currentTagId = null;
+            document.getElementById('tagModalTitle').textContent = '新增標籤';
+            document.getElementById('tagForm').reset();
+            document.getElementById('tagId').value = '';
+            document.getElementById('tagIsActive').checked = true;
+            document.getElementById('tagSort').value = '99';
+            document.getElementById('tagModal').style.display = 'block';
+        }
+
+        // 編輯標籤
+        async function editTag(id) {
+            try {
+                const response = await fetch(`${API_BASE}/tags`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const tag = result.data.find(t => t._id === id);
+                    if (tag) {
+                        currentTagId = id;
+                        document.getElementById('tagModalTitle').textContent = '編輯標籤';
+                        document.getElementById('tagId').value = id;
+                        document.getElementById('tagName').value = tag.name;
+                        document.getElementById('tagSort').value = tag.sort;
+                        document.getElementById('tagIsActive').checked = tag.isActive;
+                        document.getElementById('tagModal').style.display = 'block';
+                    } else {
+                        alert('找不到該標籤');
+                    }
+                } else {
+                    alert('載入標籤失敗: ' + result.message);
+                }
+            } catch (error) {
+                alert('載入標籤失敗: ' + error.message);
+            }
+        }
+
+        // 關閉標籤模態框
+        function closeTagModal() {
+            document.getElementById('tagModal').style.display = 'none';
+        }
+
+        // 設置標籤表單提交
+        function setupTagFormSubmit() {
+            document.getElementById('tagForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const name = document.getElementById('tagName').value;
+                const sort = parseInt(document.getElementById('tagSort').value);
+                const isActive = document.getElementById('tagIsActive').checked;
+
+                const tagData = {
+                    name,
+                    sort,
+                    isActive
+                };
+
+                try {
+                    let response;
+                    if (currentTagId) {
+                        // 更新
+                        response = await fetch(`${API_BASE}/tags/${currentTagId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(tagData)
+                        });
+                    } else {
+                        // 創建
+                        response = await fetch(`${API_BASE}/tags`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(tagData)
+                        });
+                    }
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        alert(result.message);
+                        closeTagModal();
+                        loadTagsList();
+                        loadTagsForSelect(); // 更新下拉選單
+                    } else {
+                        alert('操作失敗: ' + result.message);
+                    }
+                } catch (error) {
+                    alert('操作失敗: ' + error.message);
+                }
+            });
+        }
+
+        // 刪除標籤
+        async function deleteTag(id) {
+            if (!confirm('確定要刪除這個標籤嗎？此操作無法撤銷！')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/tags/${id}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    loadTagsList();
+                    loadTagsForSelect(); // 更新下拉選單
+                } else {
+                    alert('刪除失敗: ' + result.message);
+                }
+            } catch (error) {
+                alert('刪除失敗: ' + error.message);
             }
         }
     </script>

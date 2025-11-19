@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公告詳情 - 最新消息</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: #000000;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        .header {
+            background: #000000;
+            color: white;
+            padding: 40px;
+            text-align: center;
+            border-bottom: 3px solid #000000;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: white;
+            text-decoration: none;
+            padding: 10px 25px;
+            border: 2px solid white;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            background: white;
+            color: #000000;
+        }
+
+        .article {
+            padding: 50px 40px;
+        }
+
+        .article-header {
+            border-bottom: 2px solid #000000;
+            padding-bottom: 25px;
+            margin-bottom: 30px;
+        }
+
+        .article-title {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            line-height: 1.3;
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 0;
+            font-size: 0.9em;
+            font-weight: 700;
+            color: white;
+            background: #000000;
+            border: 2px solid #000000;
+            letter-spacing: 1px;
+        }
+
+        .pin-badge {
+            background: #000000;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 0;
+            font-size: 0.9em;
+            font-weight: 700;
+            border: 2px solid #000000;
+            letter-spacing: 1px;
+        }
+
+        .date {
+            color: #666666;
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        .view-count {
+            color: #666666;
+            font-size: 0.95em;
+        }
+
+        .article-content {
+            color: #333333;
+            line-height: 1.9;
+            font-size: 1.1em;
+            margin-bottom: 40px;
+        }
+
+        .article-content p {
+            margin-bottom: 1em;
+        }
+
+        .article-content h1,
+        .article-content h2,
+        .article-content h3 {
+            margin: 1.5em 0 0.8em 0;
+            font-weight: 700;
+            color: #000000;
+        }
+
+        .article-content ul,
+        .article-content ol {
+            margin-left: 2em;
+            margin-bottom: 1em;
+        }
+
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            margin: 1em 0;
+        }
+
+        .article-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 40px 0;
+        }
+
+        .article-images img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border: 2px solid #000000;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .article-images img:hover {
+            opacity: 0.7;
+        }
+
+        .article-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #000000;
+        }
+
+        .link-item, .file-item {
+            display: block;
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 0;
+            text-decoration: none;
+            color: #000000;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .link-item:hover, .file-item:hover {
+            background: #000000;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 100px 40px;
+            color: #666666;
+            font-size: 1.2em;
+        }
+
+        .error {
+            text-align: center;
+            padding: 100px 40px;
+            color: #000000;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        /* 圖片預覽模態框 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+        }
+
+        .modal img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+            border: 3px solid white;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            color: white;
+            font-size: 50px;
+            cursor: pointer;
+            font-weight: 300;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .article {
+                padding: 30px 20px;
+            }
+
+            .article-title {
+                font-size: 1.6em;
+            }
+
+            .article-content {
+                font-size: 1em;
+            }
+
+            .article-images {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .article-images img {
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>最新消息</h1>
+            <a href="/" class="back-link">← 返回列表</a>
+        </div>
+
+        <div id="articleContainer">
+            <div class="loading">載入中...</div>
+        </div>
+    </div>
+
+    <!-- 圖片預覽模態框 -->
+    <div id="imageModal" class="modal">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <img id="modalImage" src="" alt="預覽">
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        // 從 URL 獲取文章 ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const newsId = urlParams.get('id');
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!newsId) {
+                displayError('無效的文章 ID');
+                return;
+            }
+            loadArticle();
+        });
+
+        // 載入文章
+        async function loadArticle() {
+            const container = document.getElementById('articleContainer');
+            container.innerHTML = '<div class="loading">載入中...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/news/${newsId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    displayArticle(result.data);
+                } else {
+                    displayError(result.message || '載入失敗');
+                }
+            } catch (error) {
+                displayError('載入失敗: ' + error.message);
+            }
+        }
+
+        // 顯示文章
+        function displayArticle(article) {
+            const container = document.getElementById('articleContainer');
+
+            // 更新頁面標題
+            document.title = `${article.title} - 最新消息`;
+
+            let html = `
+                <div class="article">
+                    <div class="article-header">
+                        <h1 class="article-title">${escapeHtml(article.title)}</h1>
+                        <div class="article-meta">
+                            <span class="tag">${escapeHtml(article.tag)}</span>
+                            ${article.isPinned ? '<span class="pin-badge">置頂</span>' : ''}
+                            <span class="date">${formatDate(article.publishDate)}</span>
+                            <span class="view-count">瀏覽次數：${article.viewCount || 0}</span>
+                        </div>
+                    </div>
+
+                    <div class="article-content">
+                        ${article.content}
+                    </div>
+
+                    ${article.images && article.images.length > 0 ? `
+                        <div class="article-section">
+                            <h2 class="section-title">相關圖片</h2>
+                            <div class="article-images">
+                                ${article.images.map(img => `
+                                    <img src="${img.url}" alt="圖片" onclick="showImage('${img.url}')">
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${article.links && article.links.length > 0 ? `
+                        <div class="article-section">
+                            <h2 class="section-title">相關連結</h2>
+                            ${article.links.map(link => `
+                                <a href="${link.url}" class="link-item" target="_blank">
+                                    ${escapeHtml(link.title)}
+                                </a>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+
+                    ${article.files && article.files.length > 0 ? `
+                        <div class="article-section">
+                            <h2 class="section-title">附件下載</h2>
+                            ${article.files.map(file => `
+                                <a href="${file.url}" class="file-item" target="_blank" download="${file.originalName}">
+                                    📎 ${escapeHtml(file.originalName)}
+                                </a>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // 顯示錯誤
+        function displayError(message) {
+            const container = document.getElementById('articleContainer');
+            container.innerHTML = `
+                <div class="error">
+                    ${message}
+                    <br><br>
+                    <a href="/" class="back-link" style="color: #000; border-color: #000;">返回首頁</a>
+                </div>
+            `;
+        }
+
+        // 顯示圖片
+        function showImage(url) {
+            document.getElementById('modalImage').src = url;
+            document.getElementById('imageModal').style.display = 'block';
+        }
+
+        // 關閉模態框
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // HTML 轉義
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 格式化日期
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('zh-TW', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // 點擊模態框外部關閉
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
