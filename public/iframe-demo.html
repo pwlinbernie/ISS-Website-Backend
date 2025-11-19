@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iframe 嵌入示範</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: #f5f5f5;
+            padding: 40px;
+            color: #000;
+        }
+
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border: 2px solid #000;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .code-block {
+            background: #f9f9f9;
+            border: 2px solid #000;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+
+        .iframe-container {
+            margin: 30px 0;
+            border: 2px solid #000;
+        }
+
+        iframe {
+            width: 100%;
+            border: none;
+        }
+
+        .section {
+            margin: 40px 0;
+        }
+
+        .section h2 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .note {
+            background: #fff3cd;
+            border: 2px solid #000;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        button {
+            background: #000;
+            color: white;
+            border: 2px solid #000;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: white;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>最新消息 iframe 嵌入示範</h1>
+
+        <div class="section">
+            <h2>📋 基本嵌入代碼</h2>
+            <p>將以下代碼複製到您的網站中：</p>
+            <div class="code-block" id="basicCode">
+&lt;iframe
+    src="https://iss-news-system-a1e859b9ddc0.herokuapp.com/embed"
+    width="100%"
+    height="800"
+    frameborder="0"
+    style="border: 2px solid #000;"
+&gt;&lt;/iframe&gt;
+            </div>
+            <button onclick="copyCode('basicCode')">複製代碼</button>
+        </div>
+
+        <div class="section">
+            <h2>📱 響應式嵌入代碼（推薦）</h2>
+            <p>使用響應式容器，自動適應不同螢幕尺寸：</p>
+            <div class="code-block" id="responsiveCode">
+&lt;div style="position: relative; width: 100%; padding-bottom: 75%; overflow: hidden;"&gt;
+    &lt;iframe
+        src="https://iss-news-system-a1e859b9ddc0.herokuapp.com/embed"
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 2px solid #000;"
+        frameborder="0"
+    &gt;&lt;/iframe&gt;
+&lt;/div&gt;
+            </div>
+            <button onclick="copyCode('responsiveCode')">複製代碼</button>
+        </div>
+
+        <div class="section">
+            <h2>🎨 自訂高度嵌入</h2>
+            <p>調整高度以符合您的需求：</p>
+            <div class="code-block" id="customHeightCode">
+&lt;iframe
+    src="https://iss-news-system-a1e859b9ddc0.herokuapp.com/embed"
+    width="100%"
+    height="600"
+    frameborder="0"
+    style="border: 2px solid #000;"
+&gt;&lt;/iframe&gt;
+            </div>
+            <button onclick="copyCode('customHeightCode')">複製代碼</button>
+        </div>
+
+        <div class="section">
+            <h2>🔗 本地測試代碼</h2>
+            <p>在本地開發環境測試時使用：</p>
+            <div class="code-block" id="localCode">
+&lt;iframe
+    src="http://localhost:3000/embed"
+    width="100%"
+    height="800"
+    frameborder="0"
+    style="border: 2px solid #000;"
+&gt;&lt;/iframe&gt;
+            </div>
+            <button onclick="copyCode('localCode')">複製代碼</button>
+        </div>
+
+        <div class="note">
+            <strong>📌 注意事項：</strong>
+            <ul>
+                <li>建議最小高度為 600px，以確保完整顯示內容</li>
+                <li>iframe 會自動適應內容，包含分類篩選、分頁等功能</li>
+                <li>嵌入頁面已移除管理後台按鈕，更適合公開展示</li>
+                <li>所有連結和附件會在新視窗開啟</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>👀 實際效果預覽</h2>
+            <p>以下是嵌入的實際效果（本地開發版本）：</p>
+            <div class="iframe-container">
+                <iframe
+                    src="http://localhost:3000/embed"
+                    width="100%"
+                    height="800"
+                    frameborder="0"
+                ></iframe>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🌐 可用網址</h2>
+            <ul>
+                <li><strong>完整版首頁：</strong> https://iss-news-system-a1e859b9ddc0.herokuapp.com/</li>
+                <li><strong>嵌入版頁面：</strong> https://iss-news-system-a1e859b9ddc0.herokuapp.com/embed</li>
+                <li><strong>管理後台：</strong> https://iss-news-system-a1e859b9ddc0.herokuapp.com/admin</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function copyCode(elementId) {
+            const codeElement = document.getElementById(elementId);
+            const text = codeElement.textContent.trim();
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert('代碼已複製到剪貼簿！');
+            }).catch(err => {
+                console.error('複製失敗:', err);
+                // 備用複製方法
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('代碼已複製到剪貼簿！');
+            });
+        }
+    </script>
+</body>
+</html>

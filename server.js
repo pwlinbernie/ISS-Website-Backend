@@ -14,6 +14,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// 允許 iframe 嵌入
+app.use((req, res, next) => {
+  // 允許所有網站嵌入（生產環境可以限制特定網域）
+  res.setHeader('X-Frame-Options', 'ALLOWALL');
+  // 或使用 Content-Security-Policy (更現代的方式)
+  res.setHeader('Content-Security-Policy', "frame-ancestors *");
+  next();
+});
+
 // 静态文件
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -28,6 +37,10 @@ app.get('/', (req, res) => {
 
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+app.get('/embed', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'embed.html'));
 });
 
 // 404 处理
