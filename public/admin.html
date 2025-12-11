@@ -1210,40 +1210,49 @@
         }
 
         // 設置表單提交
+        let isSubmittingNews = false;
         function setupFormSubmit() {
             document.getElementById('newsForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                const tag = document.getElementById('tag').value;
-                const title = document.getElementById('title').value;
-                const publishDate = document.getElementById('publishDate').value;
-                const content = quill.root.innerHTML;
-                const isPinned = document.getElementById('isPinned').checked;
+                // 防止重複提交
+                if (isSubmittingNews) {
+                    console.log('正在提交中，請稍候...');
+                    return;
+                }
 
-                // 收集連結
-                const links = [];
-                document.querySelectorAll('[data-link-title]').forEach((input, index) => {
-                    const urlInput = document.querySelector(`[data-link-url="${index}"]`);
-                    if (input.value && urlInput.value) {
-                        links.push({
-                            title: input.value,
-                            url: urlInput.value
-                        });
-                    }
-                });
-
-                const newsData = {
-                    tag,
-                    title,
-                    publishDate,
-                    content,
-                    images: uploadedImages,
-                    files: uploadedFiles,
-                    links,
-                    isPinned
-                };
+                isSubmittingNews = true;
 
                 try {
+                    const tag = document.getElementById('tag').value;
+                    const title = document.getElementById('title').value;
+                    const publishDate = document.getElementById('publishDate').value;
+                    const content = quill.root.innerHTML;
+                    const isPinned = document.getElementById('isPinned').checked;
+
+                    // 收集連結
+                    const links = [];
+                    document.querySelectorAll('[data-link-title]').forEach((input, index) => {
+                        const urlInput = document.querySelector(`[data-link-url="${index}"]`);
+                        if (input.value && urlInput.value) {
+                            links.push({
+                                title: input.value,
+                                url: urlInput.value
+                            });
+                        }
+                    });
+
+                    const newsData = {
+                        tag,
+                        title,
+                        publishDate,
+                        content,
+                        images: uploadedImages,
+                        files: uploadedFiles,
+                        links,
+                        isPinned
+                    };
+
                     let response;
                     if (currentNewsId) {
                         // 更新
@@ -1276,6 +1285,11 @@
                     }
                 } catch (error) {
                     alert('操作失敗: ' + error.message);
+                } finally {
+                    // 延遲重置，確保不會立即再次提交
+                    setTimeout(() => {
+                        isSubmittingNews = false;
+                    }, 1000);
                 }
             });
         }
@@ -1488,21 +1502,30 @@
         }
 
         // 設置標籤表單提交
+        let isSubmittingTag = false;
         function setupTagFormSubmit() {
             document.getElementById('tagForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                const name = document.getElementById('tagName').value;
-                const sort = parseInt(document.getElementById('tagSort').value);
-                const isActive = document.getElementById('tagIsActive').checked;
+                // 防止重複提交
+                if (isSubmittingTag) {
+                    console.log('正在提交中，請稍候...');
+                    return;
+                }
 
-                const tagData = {
-                    name,
-                    sort,
-                    isActive
-                };
+                isSubmittingTag = true;
 
                 try {
+                    const name = document.getElementById('tagName').value;
+                    const sort = parseInt(document.getElementById('tagSort').value);
+                    const isActive = document.getElementById('tagIsActive').checked;
+
+                    const tagData = {
+                        name,
+                        sort,
+                        isActive
+                    };
+
                     let response;
                     if (currentTagId) {
                         // 更新
@@ -1536,6 +1559,11 @@
                     }
                 } catch (error) {
                     alert('操作失敗: ' + error.message);
+                } finally {
+                    // 延遲重置，確保不會立即再次提交
+                    setTimeout(() => {
+                        isSubmittingTag = false;
+                    }, 1000);
                 }
             });
         }
