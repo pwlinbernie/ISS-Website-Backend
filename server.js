@@ -46,6 +46,14 @@ app.get('/embed', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'embed.html'));
 });
 
+app.get('/embed-scroll', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'embed-scroll.html'));
+});
+
+app.get('/iframe-demo', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'iframe-demo.html'));
+});
+
 app.get('/detail', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'detail.html'));
 });

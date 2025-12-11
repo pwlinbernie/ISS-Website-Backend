@@ -81,7 +81,7 @@
         <h1>最新消息 iframe 嵌入示範</h1>
 
         <div class="section">
-            <h2>📋 基本嵌入代碼</h2>
+            <h2>📋 基本嵌入代碼（無滾動分頁版）</h2>
             <p>將以下代碼複製到您的網站中（無滾動，自動根據高度分頁顯示）：</p>
             <div class="code-block" id="basicCode">
 &lt;iframe
@@ -94,6 +94,21 @@
 &gt;&lt;/iframe&gt;
             </div>
             <button onclick="copyCode('basicCode')">複製代碼</button>
+        </div>
+
+        <div class="section">
+            <h2>📜 滾動版嵌入代碼（推薦）</h2>
+            <p>可滾動版本，點擊「載入更多」按鈕載入更多公告：</p>
+            <div class="code-block" id="scrollCode">
+&lt;iframe
+    src="https://iss-news-system-a1e859b9ddc0.herokuapp.com/embed-scroll"
+    width="100%"
+    height="800"
+    frameborder="0"
+    style="border: 2px solid #000;"
+&gt;&lt;/iframe&gt;
+            </div>
+            <button onclick="copyCode('scrollCode')">複製代碼</button>
         </div>
 
         <div class="section">
@@ -129,7 +144,7 @@
         </div>
 
         <div class="section">
-            <h2>🔗 本地測試代碼</h2>
+            <h2>🔗 本地測試代碼（無滾動分頁版）</h2>
             <p>在本地開發環境測試時使用：</p>
             <div class="code-block" id="localCode">
 &lt;iframe
@@ -144,22 +159,51 @@
             <button onclick="copyCode('localCode')">複製代碼</button>
         </div>
 
+        <div class="section">
+            <h2>🔗 本地測試代碼（滾動版）</h2>
+            <p>在本地開發環境測試滾動版本：</p>
+            <div class="code-block" id="localScrollCode">
+&lt;iframe
+    src="http://localhost:3000/embed-scroll"
+    width="100%"
+    height="800"
+    frameborder="0"
+    style="border: 2px solid #000;"
+&gt;&lt;/iframe&gt;
+            </div>
+            <button onclick="copyCode('localScrollCode')">複製代碼</button>
+        </div>
+
         <div class="note">
-            <strong>📌 注意事項：</strong>
+            <strong>📌 兩種版本說明：</strong>
             <ul>
+                <li><strong>無滾動分頁版（embed）：</strong>
+                    <ul>
+                        <li>iframe 內容不會滾動，系統會根據 iframe 高度自動計算每頁顯示的公告數量</li>
+                        <li>高度越高，每頁顯示的公告數量越多（最少 1 則，最多 10 則）</li>
+                        <li>超過可視範圍的公告會透過分頁按鈕切換顯示</li>
+                        <li>適合固定高度的嵌入區域</li>
+                    </ul>
+                </li>
+                <li><strong>滾動版（embed-scroll）：</strong>
+                    <ul>
+                        <li>iframe 可以上下滾動查看所有內容</li>
+                        <li>初始載入 10 則公告，點擊「載入更多」按鈕載入更多</li>
+                        <li>沒有分頁按鈕，通過滾動和載入更多來瀏覽</li>
+                        <li>適合需要連續瀏覽的場景</li>
+                    </ul>
+                </li>
                 <li>建議最小高度為 600px，以確保完整顯示內容</li>
-                <li><strong>無滾動設計：</strong>iframe 內容不會滾動，系統會根據 iframe 高度自動計算每頁顯示的公告數量</li>
-                <li>高度越高，每頁顯示的公告數量越多（最少 1 則，最多 10 則）</li>
-                <li>超過可視範圍的公告會透過分頁按鈕切換顯示</li>
-                <li>iframe 會自動適應內容，包含分類篩選、分頁等功能</li>
+                <li>iframe 會自動適應內容，包含分類篩選功能</li>
                 <li>嵌入頁面已移除管理後台按鈕，更適合公開展示</li>
+                <li>點擊公告會在 iframe 內顯示詳情，點擊返回可回到列表</li>
                 <li>所有連結和附件會在新視窗開啟</li>
             </ul>
         </div>
 
         <div class="section">
-            <h2>👀 實際效果預覽</h2>
-            <p>以下是嵌入的實際效果（本地開發版本，無滾動自動分頁）：</p>
+            <h2>👀 實際效果預覽 - 無滾動分頁版</h2>
+            <p>以下是無滾動分頁版的實際效果：</p>
             <div class="iframe-container">
                 <iframe
                     src="http://localhost:3000/embed"
@@ -172,10 +216,24 @@
         </div>
 
         <div class="section">
+            <h2>👀 實際效果預覽 - 滾動版</h2>
+            <p>以下是滾動版的實際效果：</p>
+            <div class="iframe-container">
+                <iframe
+                    src="http://localhost:3000/embed-scroll"
+                    width="100%"
+                    height="800"
+                    frameborder="0"
+                ></iframe>
+            </div>
+        </div>
+
+        <div class="section">
             <h2>🌐 可用網址</h2>
             <ul>
                 <li><strong>完整版首頁：</strong> https://iss-news-system-a1e859b9ddc0.herokuapp.com/</li>
-                <li><strong>嵌入版頁面：</strong> https://iss-news-system-a1e859b9ddc0.herokuapp.com/embed</li>
+                <li><strong>嵌入版頁面（無滾動分頁）：</strong> https://iss-news-system-a1e859b9ddc0.herokuapp.com/embed</li>
+                <li><strong>嵌入版頁面（滾動版）：</strong> https://iss-news-system-a1e859b9ddc0.herokuapp.com/embed-scroll</li>
                 <li><strong>管理後台：</strong> https://iss-news-system-a1e859b9ddc0.herokuapp.com/admin</li>
             </ul>
         </div>
