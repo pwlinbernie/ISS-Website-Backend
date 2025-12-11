@@ -1791,7 +1791,7 @@
                 const user = await auth0Client.getUser();
 
                 // 檢查是否有 admin 角色
-                const hasAdmin = checkAdminRole(user);
+                const hasAdmin = await checkAdminRole(user);
 
                 if (!hasAdmin) {
                     showLoginPage('您沒有管理員權限。請使用管理員帳號登入。');
