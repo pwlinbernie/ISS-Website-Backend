@@ -603,8 +603,8 @@
 
         // 查看公告詳情
         function viewNews(id) {
-            // 在 iframe 中以新視窗開啟詳情頁
-            window.open(`/detail?id=${id}`, '_blank');
+            // 在當前 iframe 中跳轉到詳情頁
+            window.location.href = `/detail?id=${id}`;
         }
 
         // 顯示圖片

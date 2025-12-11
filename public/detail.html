@@ -274,7 +274,7 @@
     <div class="container">
         <div class="header">
             <h1>最新消息</h1>
-            <a href="/" class="back-link">← 返回列表</a>
+            <a href="javascript:void(0)" onclick="goBack()" class="back-link">← 返回列表</a>
         </div>
 
         <div id="articleContainer">
@@ -391,7 +391,7 @@
                 <div class="error">
                     ${message}
                     <br><br>
-                    <a href="/" class="back-link" style="color: #000; border-color: #000;">返回首頁</a>
+                    <a href="javascript:void(0)" onclick="goBack()" class="back-link" style="color: #000; border-color: #000;">返回首頁</a>
                 </div>
             `;
         }
@@ -424,6 +424,18 @@
                 hour: '2-digit',
                 minute: '2-digit'
             });
+        }
+
+        // 返回列表頁面
+        function goBack() {
+            // 檢測是否在 iframe 中
+            if (window.self !== window.top) {
+                // 在 iframe 中，使用 self.location 保持在 iframe 內跳轉
+                window.self.location.href = '/';
+            } else {
+                // 不在 iframe 中，正常跳轉
+                window.location.href = '/';
+            }
         }
 
         // 點擊模態框外部關閉

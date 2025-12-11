@@ -30,6 +30,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/news', require('./routes/newsRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 app.use('/api/tags', require('./routes/tagRoutes'));
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
 // 前端路由
 app.get('/', (req, res) => {
