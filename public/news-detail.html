@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公告詳情 - 公告系統</title>
+    <style>
+        /* 這裡貼上與 index.html 相同的 CSS，建議將 CSS 提取為獨立檔案 style.css 讓兩個頁面共用 */
+        /* 為節省篇幅，請複製 index.html <style> 標籤內的所有內容到這裡 */
+        
+        /* 針對詳情頁的額外微調 */
+        .news-detail-container {
+            background: white;
+            padding: 40px;
+            border: 2px solid #000000;
+            margin-top: 30px;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #000000;
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            border: 2px solid #000000;
+            transition: all 0.2s;
+        }
+        
+        .back-btn:hover {
+            background: white;
+            color: #000000;
+        }
+
+        .news-content {
+            font-size: 1.1em;
+            margin: 30px 0;
+        }
+        
+        /* 移除原本 collapsed 的樣式限制 */
+        .news-content img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>公告詳情</h1>
+            <p>Department News Detail</p>
+        </div>
+
+        <div style="padding: 20px 40px;">
+            <a href="index.html" class="back-btn">← 返回列表</a>
+            
+            <div id="newsDetail" class="news-detail-container">
+                <div class="loading">載入中...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="imageModal" class="modal">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <img id="modalImage" src="" alt="預覽">
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. 從網址取得 ID
+            const urlParams = new URLSearchParams(window.location.search);
+            const newsId = urlParams.get('id');
+
+            if (newsId) {
+                loadNewsDetail(newsId);
+            } else {
+                document.getElementById('newsDetail').innerHTML = '<div class="error">無效的公告 ID</div>';
+            }
+        });
+
+        async function loadNewsDetail(id) {
+            const container = document.getElementById('newsDetail');
+            
+            try {
+                // 2. 呼叫後端 API (參考 admin.html 中的 editNews 邏輯，確認後端有此 API)
+                const response = await fetch(`${API_BASE}/news/${id}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    renderNews(result.data);
+                } else {
+                    container.innerHTML = `<div class="error">載入失敗: ${result.message}</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="error">系統錯誤: ${error.message}</div>`;
+            }
+        }
+
+        function renderNews(item) {
+            const container = document.getElementById('newsDetail');
+            
+            // 格式化日期
+            const date = new Date(item.publishDate).toLocaleDateString('zh-TW', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+
+            container.innerHTML = `
+                <div class="news-header" style="border-bottom: 2px solid #000;">
+                    <div class="news-title-section">
+                        <h1 class="news-title" style="font-size: 2em;">${escapeHtml(item.title)}</h1>
+                        <div class="news-meta" style="margin-top: 15px;">
+                            <span class="tag ${item.tag}">${escapeHtml(item.tag)}</span>
+                            <span class="date">發佈日期：${date}</span>
+                            <span class="date">瀏覽次數：${item.viewCount || 0}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="news-content">
+                    ${item.content}
+                </div>
+
+                ${renderImages(item.images)}
+                ${renderLinks(item.links)}
+                ${renderFiles(item.files)}
+            `;
+        }
+
+        // 輔助渲染函數 (與 index.html 類似)
+        function renderImages(images) {
+            if (!images || images.length === 0) return '';
+            return `
+                <div class="news-images">
+                    <h3>相關圖片</h3>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+                    ${images.map(img => `
+                        <img src="${img.url}" 
+                             style="width: 150px; height: 150px; object-fit: cover; border: 2px solid black; cursor: pointer;"
+                             onclick="showImage('${img.url}')">
+                    `).join('')}
+                    </div>
+                </div>`;
+        }
+
+        function renderLinks(links) {
+            if (!links || links.length === 0) return '';
+            return `
+                <div class="news-links" style="margin-top: 30px;">
+                    <h3>相關連結</h3>
+                    ${links.map(link => `
+                        <a href="${link.url}" class="link-item" target="_blank">
+                            ${escapeHtml(link.title)}
+                        </a>
+                    `).join('')}
+                </div>`;
+        }
+
+        function renderFiles(files) {
+            if (!files || files.length === 0) return '';
+            return `
+                <div class="news-files" style="margin-top: 30px;">
+                    <h3>附件下載</h3>
+                    ${files.map(file => `
+                        <a href="${file.url}" class="file-item" target="_blank" download="${file.originalName}">
+                            ${escapeHtml(file.originalName)}
+                        </a>
+                    `).join('')}
+                </div>`;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 圖片預覽功能
+        function showImage(url) {
+            document.getElementById('modalImage').src = url;
+            document.getElementById('imageModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+        
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('imageModal')) {
+                closeModal();
+            }
+        }
+    </script>
+    
+    <style>
+        /* 這裡必須包含基礎樣式，例如 .tag, .link-item, .file-item 等 */
+        /* 下面僅列出依賴的關鍵 class，建議直接複製 index.html 的全部 CSS */
+        .tag { display: inline-block; padding: 6px 18px; color: white; border: 2px solid #000; margin-right: 10px; }
+        .tag.賀 { background: #000; }
+        .tag.簡章公告 { background: #333; }
+        .tag.放榜 { background: #666; }
+        .link-item, .file-item { display: inline-block; padding: 10px 20px; margin: 5px 5px 5px 0; border: 2px solid #000; text-decoration: none; color: #000; font-weight: 600; }
+        .link-item:hover, .file-item:hover { background: #000; color: white; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
+        .modal img { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 90%; max-height: 90%; border: 3px solid white; }
+        .modal-close { position: absolute; top: 30px; right: 50px; color: white; font-size: 50px; cursor: pointer; }
+    </style>
+</body>
+</html>
